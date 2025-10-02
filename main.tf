@@ -7,4 +7,6 @@ terraform {
 }
 
 provider "yandex" {
+  zone = var.zone
 }
+
