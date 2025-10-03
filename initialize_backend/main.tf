@@ -51,8 +51,12 @@ resource "yandex_storage_bucket" "iam-bucket" {
   }
 }
 
+/*
+
+SA does not have permissions to do this, but it's important
+
 resource "yandex_ydb_database_serverless" "managed_ydb" {
   name                = var.ydb_name
   deletion_protection = true
 }
-
+*/
