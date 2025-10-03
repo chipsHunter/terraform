@@ -51,3 +51,8 @@ resource "yandex_storage_bucket" "iam-bucket" {
   }
 }
 
+resource "yandex_ydb_database_serverless" "managed_ydb" {
+  name                = var.ydb_name
+  deletion_protection = true
+}
+

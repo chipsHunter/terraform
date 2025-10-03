@@ -22,10 +22,13 @@ variable "bucket_data_folder" {
   description = "Folder where this .tfstate file should be placed"
   type        = string
 }
-locals {
-  bucket_data_full_path = "$var.bucket_data_folder/"
-}
 variable "s3_key" {
   description = "Key for symmetric crypting"
   type        = map(string)
 }
+
+variable "ydb_name" {
+  description = "Name for Managed YDB"
+  type        = string
+}
+
