@@ -15,3 +15,8 @@ variable "service_account_key_file" {
   description = "Terraform Service Account Key Path"
   type        = string
 }
+
+variable "s3_folder_name" {
+  description = "Prefix for tfstate in S3 bucket"
+  type        = string
+}
