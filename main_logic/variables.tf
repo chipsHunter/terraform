@@ -51,3 +51,16 @@ variable "sg_app_name" {
   description = "Name for app Security Group"
   type        = string
 }
+variable "instance_redis" {
+  description = "All params for instance with Redis installed"
+  type = map(object({
+    name = string
+    disk_params = object({
+      name = string
+      size = number
+      type = string
+    })
+    platform_id       = string
+    ssh_key_file_path = string
+  }))
+}
