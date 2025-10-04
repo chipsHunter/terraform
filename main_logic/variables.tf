@@ -39,3 +39,11 @@ variable "subnets" {
     name       = string
   }))
 }
+variable "nat_gateway_name" {
+  description = "NAT for instances in private nets"
+  type        = string
+}
+variable "route_table_with_nat_name" {
+  description = "Route table with static NAT route"
+  type        = string
+}
