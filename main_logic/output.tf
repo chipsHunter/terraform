@@ -29,3 +29,15 @@ output "public_created_subnets_info" {
 output "gateway" {
   value = yandex_vpc_gateway.nat_gateway.id
 }
+
+data "yandex_vpc_security_group" "app_sg" {
+  name = yandex_vpc_security_group.app_security_group.name
+}
+
+output "app_sg" {
+  description = "Security Groups in folder"
+  value = {
+    id = data.yandex_vpc_security_group.app_sg.id
+  }
+}
+

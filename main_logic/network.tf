@@ -41,3 +41,22 @@ resource "yandex_vpc_route_table" "rt" {
 }
 
 #-------------Security Groups---------------#
+resource "yandex_vpc_security_group" "app_security_group" {
+  name       = var.sg_app_name
+  network_id = yandex_vpc_network.my_net.id
+  ingress {
+    protocol          = "ANY"
+    description       = "Allow incoming traffic from members of the same security group"
+    from_port         = 0
+    to_port           = 65535
+    predefined_target = "self_security_group"
+  }
+
+  egress {
+    protocol       = "ANY"
+    description    = "Allow outgoing traffic"
+    from_port      = 0
+    to_port        = 65535
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+}

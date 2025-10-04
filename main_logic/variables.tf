@@ -47,3 +47,7 @@ variable "route_table_with_nat_name" {
   description = "Route table with static NAT route"
   type        = string
 }
+variable "sg_app_name" {
+  description = "Name for app Security Group"
+  type        = string
+}
