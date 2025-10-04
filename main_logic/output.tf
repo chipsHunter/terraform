@@ -33,7 +33,6 @@ output "gateway" {
 data "yandex_vpc_security_group" "app_sg" {
   name = yandex_vpc_security_group.app_security_group.name
 }
-
 output "app_sg" {
   description = "Security Groups in folder"
   value = {
@@ -41,3 +40,18 @@ output "app_sg" {
   }
 }
 
+data "yandex_vpc_security_group" "bastion_sg" {
+  name = yandex_vpc_security_group.bastion_host_group.name
+}
+output "bastion_sg" {
+  description = "Security Groups in folder"
+  value = {
+    id = data.yandex_vpc_security_group.bastion_sg.id
+  }
+}
+output "bastion_ip" {
+  description = "Security Groups in folder"
+  value = {
+    ip = yandex_vpc_address.addr_static_bastion.external_ipv4_address[0].address
+  }
+}

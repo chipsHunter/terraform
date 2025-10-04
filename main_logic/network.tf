@@ -16,11 +16,19 @@ resource "yandex_vpc_subnet" "private_subnets" {
 }
 
 resource "yandex_vpc_subnet" "public_subnet" {
-  v4_cidr_blocks = [var.subnets["public"].cidr_block]
   name           = var.subnets["public"].name
   zone           = var.zone
   network_id     = yandex_vpc_network.my_net.id
+  v4_cidr_blocks = [var.subnets["public"].cidr_block]
 }
+
+resource "yandex_vpc_address" "addr_static_bastion" {
+  name = var.ipv4_addr_static_bastion_name
+  external_ipv4_address {
+    zone_id = var.zone
+  }
+}
+
 
 #-----------NAT-------------------------#
 resource "yandex_vpc_gateway" "nat_gateway" {
@@ -50,6 +58,30 @@ resource "yandex_vpc_security_group" "app_security_group" {
     from_port         = 0
     to_port           = 65535
     predefined_target = "self_security_group"
+  }
+
+  ingress {
+    protocol          = "TCP"
+    port              = 22
+    security_group_id = yandex_vpc_security_group.bastion_host_group.id
+  }
+
+  egress {
+    protocol       = "ANY"
+    description    = "Allow outgoing traffic"
+    from_port      = 0
+    to_port        = 65535
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+resource "yandex_vpc_security_group" "bastion_host_group" {
+  name       = var.sg_bastion_name
+  network_id = yandex_vpc_network.my_net.id
+  ingress {
+    protocol       = "TCP"
+    description    = "Allow incoming traffic"
+    port           = 22
+    v4_cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {

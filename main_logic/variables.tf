@@ -39,6 +39,10 @@ variable "subnets" {
     name       = string
   }))
 }
+variable "ipv4_addr_static_bastion_name" {
+  description = "Bastion Host IPv4 address"
+  type        = string
+}
 variable "nat_gateway_name" {
   description = "NAT for instances in private nets"
   type        = string
@@ -49,6 +53,10 @@ variable "route_table_with_nat_name" {
 }
 variable "sg_app_name" {
   description = "Name for app Security Group"
+  type        = string
+}
+variable "sg_bastion_name" {
+  description = "Name for bastion host Security Group"
   type        = string
 }
 variable "instance_redis" {
