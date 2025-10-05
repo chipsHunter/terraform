@@ -55,6 +55,10 @@ variable "sg_app_name" {
   description = "Name for app Security Group"
   type        = string
 }
+variable "sg_db_name" {
+  description = "Name for db Security Group"
+  type        = string
+}
 variable "sg_bastion_name" {
   description = "Name for bastion host Security Group"
   type        = string
@@ -71,4 +75,25 @@ variable "instance_redis" {
     platform_id       = string
     ssh_key_file_path = string
   }))
+}
+variable "instance_bastion" {
+  description = "All params for instance with Redis installed"
+  type = map(object({
+    name = string
+    disk_params = object({
+      name = string
+      size = number
+      type = string
+    })
+    platform_id       = string
+    ssh_key_file_path = string
+  }))
+}
+variable "ip_cidr_allow_ssh_from" {
+  description = "My IPv4 address to access Bastion Host"
+  type        = list(string)
+}
+variable "script_dir" {
+  description = "Path to Folder with scripts"
+  type        = string
 }

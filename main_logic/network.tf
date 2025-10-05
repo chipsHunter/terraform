@@ -62,13 +62,56 @@ resource "yandex_vpc_security_group" "app_security_group" {
 
   ingress {
     protocol          = "TCP"
+    description       = "Allow SSH from Bastion for admin"
+    predefined_target = "self_security_group"
     port              = 22
-    security_group_id = yandex_vpc_security_group.bastion_host_group.id
   }
 
   egress {
     protocol       = "ANY"
-    description    = "Allow outgoing traffic"
+    description    = "Allow outgoing traffic to DB and Internet via NAT"
+    from_port      = 0
+    to_port        = 65535
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+resource "yandex_vpc_security_group" "db_security_group" {
+  name       = var.sg_db_name
+  network_id = yandex_vpc_network.my_net.id
+
+  ingress {
+    protocol          = "TCP"
+    description       = "Allow PG traffic from App"
+    security_group_id = yandex_vpc_security_group.app_security_group.id
+    port              = 6432
+  }
+
+  ingress {
+    protocol          = "TCP"
+    description       = "Allow Redis traffic from App"
+    security_group_id = yandex_vpc_security_group.app_security_group.id
+    port              = 6379
+  }
+
+  ingress {
+    protocol          = "TCP"
+    description       = "Allow SSH from Bastion for admin"
+    predefined_target = "self_security_group"
+    port              = 22
+  }
+
+  # Allow Redis mgmt/diagnostics from members of the same SG (e.g., bastion NIC in private-db)
+  ingress {
+    protocol          = "TCP"
+    description       = "Allow Redis traffic from members of DB SG (bastion NIC)"
+    predefined_target = "self_security_group"
+    port              = 6379
+  }
+
+  # Egress is required, otherwise instances in this SG cannot initiate connections (default deny)
+  egress {
+    protocol       = "ANY"
+    description    = "Allow outgoing traffic to Internet via NAT and intra-VPC"
     from_port      = 0
     to_port        = 65535
     v4_cidr_blocks = ["0.0.0.0/0"]
@@ -81,7 +124,7 @@ resource "yandex_vpc_security_group" "bastion_host_group" {
     protocol       = "TCP"
     description    = "Allow incoming traffic"
     port           = 22
-    v4_cidr_blocks = ["0.0.0.0/0"]
+    v4_cidr_blocks = var.ip_cidr_allow_ssh_from
   }
 
   egress {
