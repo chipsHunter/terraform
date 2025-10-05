@@ -31,7 +31,6 @@ resource "yandex_compute_instance" "redis" {
   }
 }
 
-
 resource "yandex_compute_instance" "bastion" {
   name        = var.instance_bastion["main"].name
   platform_id = var.instance_bastion["main"].platform_id

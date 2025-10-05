@@ -85,3 +85,11 @@ output "bastion_public_ip" {
     cidr_block = yandex_vpc_subnet.public_subnet.v4_cidr_blocks
   }
 }
+data "yandex_mdb_postgresql_cluster" "cluster-for-java-app" {
+  name = yandex_mdb_postgresql_cluster.my_cluster.name
+}
+
+output "cluster_fqdn" {
+  value = data.yandex_mdb_postgresql_cluster.cluster-for-java-app.host[0].fqdn
+}
+

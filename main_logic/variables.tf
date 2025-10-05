@@ -89,6 +89,19 @@ variable "instance_bastion" {
     ssh_key_file_path = string
   }))
 }
+variable "instance_app" {
+  description = "All params for instance with Redis installed"
+  type = map(object({
+    name = string
+    disk_params = object({
+      name = string
+      size = number
+      type = string
+    })
+    platform_id       = string
+    ssh_key_file_path = string
+  }))
+}
 variable "ip_cidr_allow_ssh_from" {
   description = "My IPv4 address to access Bastion Host"
   type        = list(string)
@@ -97,3 +110,40 @@ variable "script_dir" {
   description = "Path to Folder with scripts"
   type        = string
 }
+variable "registry_name" {
+  description = "Name of Yandex Container Registry"
+  type        = string
+}
+variable "OAuth_token" {
+  description = "Token for external app access"
+  type        = string
+}
+variable "database" {
+  description = "All databases created"
+  type = map(object({
+    name  = string
+    owner = string
+  }))
+}
+variable "database_user" {
+  type = map(object({
+    name     = string
+    password = string
+  }))
+}
+variable "database_cluster" {
+  type = map(object({
+    name               = string
+    environment        = string
+    resource_preset_id = string
+    disk_type_id       = string
+    disk_size          = number
+    version            = number
+  }))
+}
+
+locals {
+  cluster_for_java_app_fqdn = data.yandex_mdb_postgresql_cluster.cluster-for-java-app.host[0].fqdn
+  redis_address             = yandex_compute_instance.redis.network_interface[0].ip_address
+}
+

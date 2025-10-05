@@ -26,3 +26,7 @@ provider "yandex" {
   zone                     = var.zone
 }
 
+resource "yandex_container_registry" "default" {
+  name = var.registry_name
+}
+
