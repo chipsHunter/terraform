@@ -31,6 +31,39 @@ resource "yandex_compute_instance" "redis" {
   }
 }
 
+
+resource "yandex_compute_instance" "app" {
+  name        = var.instance_app["main"].name
+  platform_id = var.instance_app["main"].platform_id
+  zone        = var.zone
+
+  resources {
+    cores  = 2
+    memory = 4
+  }
+
+  boot_disk {
+    device_name = var.instance_app["main"].disk_params.name
+    initialize_params {
+      size     = var.instance_app["main"].disk_params.size
+      type     = var.instance_app["main"].disk_params.type
+      image_id = data.yandex_compute_image.container_optimized_image.id
+    }
+  }
+
+  service_account_id = var.main_terraform_sa_id
+
+  network_interface {
+    subnet_id          = yandex_vpc_subnet.private_subnets["private-app"].id
+    security_group_ids = [yandex_vpc_security_group.app_security_group.id]
+  }
+
+  metadata = {
+    ssh-keys  = "ubuntu:${file(var.instance_bastion["main"].ssh_key_file_path)}"
+    user-data = file("${path.module}/${var.script_dir}/init_app_inst.sh")
+  }
+}
+
 resource "yandex_compute_instance" "bastion" {
   name        = var.instance_bastion["main"].name
   platform_id = var.instance_bastion["main"].platform_id

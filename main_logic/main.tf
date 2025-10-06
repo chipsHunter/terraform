@@ -25,8 +25,3 @@ provider "yandex" {
   service_account_key_file = var.service_account_key_file
   zone                     = var.zone
 }
-
-resource "yandex_container_registry" "default" {
-  name = var.registry_name
-}
-

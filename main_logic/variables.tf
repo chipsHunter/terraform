@@ -147,3 +147,7 @@ locals {
   redis_address             = yandex_compute_instance.redis.network_interface[0].ip_address
 }
 
+variable "main_terraform_sa_id" {
+  description = "ID of the main Service Account that runs all"
+  type        = string
+}
