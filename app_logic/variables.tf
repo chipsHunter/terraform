@@ -11,3 +11,7 @@ variable "folder_id" {
   description = "Yandex Folder ID"
   type        = string
 }
+variable "kube_config" {
+  description = "Path to k3s config from Java App instance"
+  type        = string
+}

@@ -1,4 +1,5 @@
 .terraform
 *.tfvars
 initialize_backend/*.tfstate*
-initialize_backend/*.sh
+general_scripts/*.sh
+app_logic/.kube
