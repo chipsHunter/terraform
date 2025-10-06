@@ -61,6 +61,14 @@ resource "yandex_vpc_security_group" "app_security_group" {
   }
 
   ingress {
+    protocol          = "ANY"
+    description       = "Allow incoming traffic from ALB"
+    from_port         = 0
+    to_port           = 65535
+    security_group_id = yandex_vpc_security_group.alb_security_group.id
+  }
+
+  ingress {
     protocol          = "TCP"
     description       = "Allow SSH from Bastion for admin"
     predefined_target = "self_security_group"
@@ -127,6 +135,23 @@ resource "yandex_vpc_security_group" "bastion_host_group" {
     v4_cidr_blocks = var.ip_cidr_allow_ssh_from
   }
 
+  egress {
+    protocol       = "ANY"
+    description    = "Allow outgoing traffic"
+    from_port      = 0
+    to_port        = 65535
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+resource "yandex_vpc_security_group" "alb_security_group" {
+  name       = var.sg_alb_name
+  network_id = yandex_vpc_network.my_net.id
+  ingress {
+    protocol       = "TCP"
+    description    = "Allow incoming traffic"
+    port           = -1
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
   egress {
     protocol       = "ANY"
     description    = "Allow outgoing traffic"

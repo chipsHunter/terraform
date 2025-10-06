@@ -23,6 +23,12 @@ resource "yandex_compute_instance" "redis" {
     security_group_ids = [yandex_vpc_security_group.db_security_group.id]
   }
 
+  lifecycle {
+    ignore_changes = [
+      boot_disk,
+    ]
+  }
+
   metadata = {
     docker-compose = file("${path.module}/${var.script_dir}/docker-compose.yaml")
     user-data = templatefile("${path.module}/${var.script_dir}/cloud_config.yaml.tftpl", {
@@ -56,6 +62,12 @@ resource "yandex_compute_instance" "app" {
   network_interface {
     subnet_id          = yandex_vpc_subnet.private_subnets["private-app"].id
     security_group_ids = [yandex_vpc_security_group.app_security_group.id]
+  }
+
+  lifecycle {
+    ignore_changes = [
+      boot_disk,
+    ]
   }
 
   metadata = {
@@ -98,6 +110,12 @@ resource "yandex_compute_instance" "bastion" {
     subnet_id          = yandex_vpc_subnet.private_subnets["private-db"].id
     nat                = false
     security_group_ids = [yandex_vpc_security_group.db_security_group.id]
+  }
+
+  lifecycle {
+    ignore_changes = [
+      boot_disk,
+    ]
   }
 
   metadata = {

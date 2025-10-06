@@ -42,10 +42,17 @@ output "gateway" {
 data "yandex_vpc_security_group" "app_sg" {
   name = yandex_vpc_security_group.app_security_group.name
 }
+data "yandex_vpc_security_group" "alb_sg" {
+  name = yandex_vpc_security_group.alb_security_group.name
+}
 output "app_sg" {
-  description = "Security Groups in folder"
   value = {
     id = data.yandex_vpc_security_group.app_sg.id
+  }
+}
+output "alb_sg" {
+  value = {
+    id = data.yandex_vpc_security_group.alb_sg.id
   }
 }
 
@@ -68,21 +75,21 @@ output "bastion_internal_app_ip" {
   description = "IPv4 bastion host address in private app subnet"
   value = {
     ip_address = yandex_compute_instance.bastion.network_interface[1].ip_address
-    cidr_block = yandex_vpc_subnet.private_subnets["private-app"].v4_cidr_blocks
+    cidr_block = yandex_vpc_subnet.private_subnets["private-app"].v4_cidr_blocks[0]
   }
 }
 output "bastion_internal_db_ip" {
   description = "IPv4 bastion host address in private db subnet"
   value = {
     ip_address = yandex_compute_instance.bastion.network_interface[2].ip_address
-    cidr_block = yandex_vpc_subnet.private_subnets["private-db"].v4_cidr_blocks
+    cidr_block = yandex_vpc_subnet.private_subnets["private-db"].v4_cidr_blocks[0]
   }
 }
 output "bastion_public_ip" {
   description = "IPv4 bastion host address in public subnet"
   value = {
     ip_address = yandex_compute_instance.bastion.network_interface[0].ip_address
-    cidr_block = yandex_vpc_subnet.public_subnet.v4_cidr_blocks
+    cidr_block = yandex_vpc_subnet.public_subnet.v4_cidr_blocks[0]
   }
 }
 data "yandex_mdb_postgresql_cluster" "cluster-for-java-app" {
@@ -92,4 +99,26 @@ data "yandex_mdb_postgresql_cluster" "cluster-for-java-app" {
 output "cluster_fqdn" {
   value = data.yandex_mdb_postgresql_cluster.cluster-for-java-app.host[0].fqdn
 }
+output "database_name" {
+  value = yandex_mdb_postgresql_database.my_db.name
+}
+output "database_user" {
+  value = yandex_mdb_postgresql_user.my_user.name
+}
+output "redis_ipv4" {
+  value = yandex_compute_instance.redis.network_interface[0].ip_address
+}
+output "app_ipv4" {
+  value = yandex_compute_instance.app.network_interface[0].ip_address
+}
+output "net_id" {
+  value = yandex_vpc_network.my_net.id
+}
 
+output "main_sa_id" {
+  value = var.main_terraform_sa_id
+}
+
+output "registry_id" {
+  value = yandex_container_registry.default.id
+}

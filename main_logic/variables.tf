@@ -63,6 +63,10 @@ variable "sg_bastion_name" {
   description = "Name for bastion host Security Group"
   type        = string
 }
+variable "sg_alb_name" {
+  description = "Name for ALB host Security Group"
+  type        = string
+}
 variable "instance_redis" {
   description = "All params for instance with Redis installed"
   type = map(object({
