@@ -1,21 +1,3 @@
-variable "zone" {
-  default = "ru-central1-a"
-}
-
-variable "cloud_id" {
-  description = "Yandex Cloud ID"
-  type        = string
-}
-
-variable "folder_id" {
-  description = "Yandex Folder ID"
-  type        = string
-}
-variable "service_account_key_file" {
-  description = "Terraform Service Account Key Path"
-  type        = string
-}
-
 variable "environment" {
   description = "Deployment environment (e.g., dev, stage, prod)"
   type        = string
@@ -80,10 +62,6 @@ variable "script_dir" {
 }
 variable "registry_name" {
   description = "Name of Yandex Container Registry"
-  type        = string
-}
-variable "OAuth_token" {
-  description = "Token for external app access"
   type        = string
 }
 variable "database" {
