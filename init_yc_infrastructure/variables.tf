@@ -59,6 +59,7 @@ variable "ip_cidr_allow_ssh_from" {
 variable "script_dir" {
   description = "Path to Folder with scripts"
   type        = string
+  default     = "./scripts"
 }
 variable "registry_name" {
   description = "Name of Yandex Container Registry"
