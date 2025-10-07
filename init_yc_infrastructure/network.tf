@@ -31,13 +31,11 @@ resource "yandex_vpc_address" "addr_static_bastion" {
 
 #-----------NAT-------------------------#
 resource "yandex_vpc_gateway" "nat_gateway" {
-  folder_id = var.folder_id
-  name      = local.nat_gateway_name
+  name = local.nat_gateway_name
   shared_egress_gateway {}
 }
 
 resource "yandex_vpc_route_table" "rt" {
-  folder_id  = var.folder_id
   name       = local.route_table_with_nat_name
   network_id = yandex_vpc_network.my_net.id
 

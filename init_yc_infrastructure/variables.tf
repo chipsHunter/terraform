@@ -1,10 +1,8 @@
-variable "environment" {
-  description = "Deployment environment (e.g., dev, stage, prod)"
-  type        = string
-}
-
 data "yandex_compute_image" "latest_ubuntu_2404" {
   family = "ubuntu-2404-lts"
+}
+variable "zone" {
+  default = "ru-central1-a"
 }
 locals {
   ubuntu_id                 = data.yandex_compute_image.latest_ubuntu_2404.id
@@ -29,6 +27,10 @@ locals {
 variable "s3_folder_name" {
   description = "Prefix for tfstate in S3 bucket"
   type        = string
+}
+variable "environment" {
+  type    = string
+  default = "dev"
 }
 variable "subnets" {
   description = "A map of subnets to create"
@@ -59,7 +61,7 @@ variable "ip_cidr_allow_ssh_from" {
 variable "script_dir" {
   description = "Path to Folder with scripts"
   type        = string
-  default     = "./scripts"
+  default     = "scripts"
 }
 variable "registry_name" {
   description = "Name of Yandex Container Registry"
