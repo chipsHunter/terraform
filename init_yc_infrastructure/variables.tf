@@ -42,12 +42,11 @@ variable "subnets" {
 variable "instance_params" {
   description = "All params for instance "
   type = map(object({
-    name = string
+    type  = string
+    cores = number
     disk_params = object({
       name   = string
       size   = number
-      type   = string
-      cores  = number
       memory = number
     })
     platform_id       = string
