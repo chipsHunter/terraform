@@ -45,9 +45,9 @@ variable "instance_params" {
     memory = number
     cores  = number
     disk_params = object({
-      name   = string
-      size   = number
-      memory = number
+      name = string
+      size = number
+      type = string
     })
     platform_id       = string
     ssh_key_file_path = string
