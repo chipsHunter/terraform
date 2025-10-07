@@ -1,19 +1,19 @@
 
 resource "yandex_compute_instance" "redis" {
-  name        = var.instance_redis["main"].name
-  platform_id = var.instance_redis["main"].platform_id
+  name        = local.redis_inst_name
+  platform_id = var.instance_params["redis"].platform_id
   zone        = var.zone
 
   resources {
-    cores  = 2
-    memory = 4
+    cores  = var.instance_params["redis"].cores
+    memory = var.instance_params["redis"].memory
   }
 
   boot_disk {
-    device_name = var.instance_redis["main"].disk_params.name
+    device_name = var.instance_params["redis"].disk_params.name
     initialize_params {
-      size     = var.instance_redis["main"].disk_params.size
-      type     = var.instance_redis["main"].disk_params.type
+      size     = var.instance_params["redis"].disk_params.size
+      type     = var.instance_params["redis"].disk_params.type
       image_id = data.yandex_compute_image.container_optimized_image.id
     }
   }
@@ -23,36 +23,30 @@ resource "yandex_compute_instance" "redis" {
     security_group_ids = [yandex_vpc_security_group.db_security_group.id]
   }
 
-  lifecycle {
-    ignore_changes = [
-      boot_disk,
-    ]
-  }
-
   metadata = {
     docker-compose = file("${path.module}/${var.script_dir}/docker-compose.yaml")
     user-data = templatefile("${path.module}/${var.script_dir}/cloud_config.yaml.tftpl", {
-      ssh_key = file(var.instance_redis["main"].ssh_key_file_path)
+      ssh_key = file(var.instance_params["redis"].ssh_key_file_path)
     })
   }
 }
 
 
 resource "yandex_compute_instance" "app" {
-  name        = var.instance_app["main"].name
-  platform_id = var.instance_app["main"].platform_id
+  name        = local.app_inst_name
+  platform_id = var.instance_params["app"].platform_id
   zone        = var.zone
 
   resources {
-    cores  = 2
-    memory = 4
+    cores  = var.instance_params["app"].cores
+    memory = var.instance_params["app"].memory
   }
 
   boot_disk {
-    device_name = var.instance_app["main"].disk_params.name
+    device_name = var.instance_params["app"].disk_params.name
     initialize_params {
-      size     = var.instance_app["main"].disk_params.size
-      type     = var.instance_app["main"].disk_params.type
+      size     = var.instance_params["app"].disk_params.size
+      type     = var.instance_params["app"].disk_params.type
       image_id = data.yandex_compute_image.container_optimized_image.id
     }
   }
@@ -64,33 +58,27 @@ resource "yandex_compute_instance" "app" {
     security_group_ids = [yandex_vpc_security_group.app_security_group.id]
   }
 
-  lifecycle {
-    ignore_changes = [
-      boot_disk,
-    ]
-  }
-
   metadata = {
-    ssh-keys  = "ubuntu:${file(var.instance_bastion["main"].ssh_key_file_path)}"
+    ssh-keys  = "ubuntu:${file(var.instance_params["bastion"].ssh_key_file_path)}"
     user-data = file("${path.module}/${var.script_dir}/init_app_inst.sh")
   }
 }
 
 resource "yandex_compute_instance" "bastion" {
-  name        = var.instance_bastion["main"].name
-  platform_id = var.instance_bastion["main"].platform_id
+  name        = local.bastion_inst_name
+  platform_id = var.instance_params["bastion"].platform_id
   zone        = var.zone
 
   resources {
-    cores  = 2
-    memory = 2
+    cores  = var.instance_params["bastion"].cores
+    memory = var.instance_params["bastion"].memory
   }
 
   boot_disk {
-    device_name = var.instance_bastion["main"].disk_params.name
+    device_name = var.instance_params["bastion"].disk_params.name
     initialize_params {
-      size     = var.instance_bastion["main"].disk_params.size
-      type     = var.instance_bastion["main"].disk_params.type
+      size     = var.instance_params["bastion"].disk_params.size
+      type     = var.instance_params["bastion"].disk_params.type
       image_id = data.yandex_compute_image.latest_ubuntu.id
     }
   }
@@ -112,13 +100,8 @@ resource "yandex_compute_instance" "bastion" {
     security_group_ids = [yandex_vpc_security_group.db_security_group.id]
   }
 
-  lifecycle {
-    ignore_changes = [
-      boot_disk,
-    ]
-  }
-
   metadata = {
-    ssh-keys = "ubuntu:${file(var.instance_bastion["main"].ssh_key_file_path)}"
+    ssh-keys  = "ubuntu:${file(var.instance_params["bastion"].ssh_key_file_path)}"
+    user-data = file("${path.module}/${var.script_dir}/init_ipv4_forwarding.sh")
   }
 }

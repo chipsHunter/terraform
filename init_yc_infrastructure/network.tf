@@ -1,8 +1,7 @@
 resource "yandex_vpc_network" "my_net" {
-  name = var.vpc_network_name
+  name = local.vpc_network_name
 }
 
-# спросить, как бы тут на моем месте сделали
 resource "yandex_vpc_subnet" "private_subnets" {
   for_each = {
     for k, v in var.subnets : k => v if k != "public"
@@ -23,7 +22,7 @@ resource "yandex_vpc_subnet" "public_subnet" {
 }
 
 resource "yandex_vpc_address" "addr_static_bastion" {
-  name = var.ipv4_addr_static_bastion_name
+  name = local.ipv4_addr_static_bastion_name
   external_ipv4_address {
     zone_id = var.zone
   }
@@ -33,13 +32,13 @@ resource "yandex_vpc_address" "addr_static_bastion" {
 #-----------NAT-------------------------#
 resource "yandex_vpc_gateway" "nat_gateway" {
   folder_id = var.folder_id
-  name      = var.nat_gateway_name
+  name      = local.nat_gateway_name
   shared_egress_gateway {}
 }
 
 resource "yandex_vpc_route_table" "rt" {
   folder_id  = var.folder_id
-  name       = var.route_table_with_nat_name
+  name       = local.route_table_with_nat_name
   network_id = yandex_vpc_network.my_net.id
 
   static_route {
@@ -50,7 +49,7 @@ resource "yandex_vpc_route_table" "rt" {
 
 #-------------Security Groups---------------#
 resource "yandex_vpc_security_group" "app_security_group" {
-  name       = var.sg_app_name
+  name       = local.sg_app_name
   network_id = yandex_vpc_network.my_net.id
   ingress {
     protocol          = "ANY"
@@ -84,7 +83,7 @@ resource "yandex_vpc_security_group" "app_security_group" {
   }
 }
 resource "yandex_vpc_security_group" "db_security_group" {
-  name       = var.sg_db_name
+  name       = local.sg_db_name
   network_id = yandex_vpc_network.my_net.id
 
   ingress {
@@ -108,7 +107,6 @@ resource "yandex_vpc_security_group" "db_security_group" {
     port              = 22
   }
 
-  # Allow Redis mgmt/diagnostics from members of the same SG (e.g., bastion NIC in private-db)
   ingress {
     protocol          = "TCP"
     description       = "Allow Redis traffic from members of DB SG (bastion NIC)"
@@ -116,7 +114,6 @@ resource "yandex_vpc_security_group" "db_security_group" {
     port              = 6379
   }
 
-  # Egress is required, otherwise instances in this SG cannot initiate connections (default deny)
   egress {
     protocol       = "ANY"
     description    = "Allow outgoing traffic to Internet via NAT and intra-VPC"
@@ -126,7 +123,7 @@ resource "yandex_vpc_security_group" "db_security_group" {
   }
 }
 resource "yandex_vpc_security_group" "bastion_host_group" {
-  name       = var.sg_bastion_name
+  name       = local.sg_bastion_name
   network_id = yandex_vpc_network.my_net.id
   ingress {
     protocol       = "TCP"
@@ -144,7 +141,7 @@ resource "yandex_vpc_security_group" "bastion_host_group" {
   }
 }
 resource "yandex_vpc_security_group" "alb_security_group" {
-  name       = var.sg_alb_name
+  name       = local.sg_alb_name
   network_id = yandex_vpc_network.my_net.id
   ingress {
     protocol       = "TCP"
